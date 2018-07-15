@@ -145,7 +145,7 @@ namespace Alcohol_MQ3_Tester
             if (deviceInfo != null && deviceInfo.Count > 0)
             {
                 _mcp3008 = await SpiDevice.FromIdAsync(deviceInfo[0].Id, spiSettings);
-                StartBtn.IsEnabled = false;
+                StartBtn.IsEnabled = true;
             }
             else
             {

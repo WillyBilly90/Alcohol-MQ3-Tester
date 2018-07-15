@@ -9,13 +9,13 @@
     mc:Ignorable="d">
 
     <Grid x:Name="MainGrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" RequestedTheme="Dark" Loaded="MainGrid_Loaded">
-        <controls:RadialGauge x:Name="mugPerLiterGauge" Value="" Minimum="0" Width="400" Height="400" 
-            Maximum="2000" TickSpacing="100" ScaleWidth="26" Unit="µg/L" TickBrush="Gainsboro" TrailBrush="Orange"
+        <controls:RadialGauge x:Name="mugPerLiterGauge" Value="" Minimum="0" Width="300" Height="300" 
+            Maximum="2000" TickSpacing="100" ScaleWidth="15" Unit="µg/L" TickBrush="Gainsboro" TrailBrush="Orange"
             ScaleTickBrush="{ThemeResource ApplicationPageBackgroundThemeBrush}" ScaleBrush="LightGreen" IsTextScaleFactorEnabled="True"
-            NeedleWidth="3" NeedleBrush="IndianRed" TickLength="8" Margin="15,34,0,334" HorizontalAlignment="Left"/>
+            NeedleWidth="3" NeedleBrush="IndianRed" TickLength="5" Margin="78,53,0,127" HorizontalAlignment="Left"/>
         <TextBox x:Name="PromileTbx" Header="Promille" HorizontalAlignment="Left" Margin="555,160,0,0" Text="0" Width="150" VerticalAlignment="Top"/>
         <Button x:Name="StartBtn" x:Uid="StartBtn" HorizontalAlignment="Left" Margin="555,260,0,0" VerticalAlignment="Top" Width="150" Click="StartBtn_Click" IsEnabled="False"/>
         <Button x:Name="ResetBtn" x:Uid="ResetBtn" HorizontalAlignment="Left" Margin="555,340,0,0" VerticalAlignment="Top" Width="150" Click="ResetBtn_Click" />
-        <ProgressBar x:Name="ProgressBar" HorizontalAlignment="Left" Height="50" Width="690" VerticalAlignment="Top" Margin="15,450,0,0"/>
+        <ProgressBar x:Name="ProgressBar" HorizontalAlignment="Left" Height="20" Width="629" VerticalAlignment="Top" Margin="78,406,0,0"/>
     </Grid>
 </Page>

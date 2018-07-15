@@ -75,7 +75,7 @@ namespace Alcohol_MQ3_Tester
         private void ResetBtn_Click(object sender, RoutedEventArgs e)
         {
             GaugeValue = 0;
-            ProgressBar = 0;
+            ProgressBar.Value = 0;
         }
 
         private void StartBtn_Click(object sender, RoutedEventArgs e)

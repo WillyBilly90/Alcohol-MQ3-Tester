@@ -117,6 +117,21 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ActivityTbxCalibrating" xml:space="preserve">
+    <value>Please wait, calibrating sensor......</value>
+  </data>
+  <data name="ActivityTbxMeasuring" xml:space="preserve">
+    <value>Please wait, measuring.....</value>
+  </data>
+  <data name="ActivityTbxMeasuringEnded" xml:space="preserve">
+    <value>Measurement ended</value>
+  </data>
+  <data name="ActivityTbxReady" xml:space="preserve">
+    <value>Ready.</value>
+  </data>
+  <data name="ActivityTbxTestGauge" xml:space="preserve">
+    <value>Please wait, now testing gauge......</value>
+  </data>
   <data name="Errormessage" xml:space="preserve">
     <value>SPI device not found, please check connections to MCP3008!</value>
   </data>

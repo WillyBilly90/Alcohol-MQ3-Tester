@@ -31,6 +31,7 @@ namespace Alcohol_MQ3_Tester
     public sealed partial class MainPage : Page
     {
         private SpiDevice _mcp3008;
+        public double ZeroPoint=0; //this will be the calculated ZeroPoint for the MQ3 sensor when there is no alcohol in the air.
 
         public MainPage()
         {
@@ -68,24 +69,51 @@ namespace Alcohol_MQ3_Tester
         private void MainGrid_Loaded(object sender, RoutedEventArgs e)
         {
             //Little funny thing: test the gauge
+            ResourceLoader loader = new ResourceLoader();
+            ActivityTbx.Text = loader.GetString("ActivityTbxTestGauge");
             GaugeTester().ConfigureAwait(false);
+            //Prepair SPI
             PrepareSPI();
+            try
+            {
+                //Calibrate sensor
+                Measuring();
+                ZeroPoint = GaugeValue;
+                //Finish initialization
+                StartBtn.IsEnabled = true;
+                ActivityTbx.Text = loader.GetString("ActivityTbxReady");
+            }
+            catch
+            {
+                StartBtn.IsEnabled = false;
+                ActivityTbx.Text = loader.GetString("ErrormessageHeader");
+            }
         }
 
         private void ResetBtn_Click(object sender, RoutedEventArgs e)
         {
             GaugeValue = 0;
             StartBtn.IsEnabled = true;
+            ResourceLoader loader = new ResourceLoader();
+            ActivityTbx.Text = loader.GetString("ActivityTbxReady");
         }
 
         private void StartBtn_Click(object sender, RoutedEventArgs e)
         {
+            ResourceLoader loader = new ResourceLoader();
+            ActivityTbx.Text = loader.GetString("ActivityTbxMeasuring");
+            Measuring();
+            ActivityTbx.Text = loader.GetString("ActivityTbxReady");
+        }
+
+        private void Measuring()
+        {
             //read MQ3 sensor for 5 seconds and end with highest value
-            Stopwatch stopWatch=new Stopwatch();
+            Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
             double highestValue = 0;
-            StartBtn.IsEnabled = true;
-            while (stopWatch.Elapsed < TimeSpan.FromMilliseconds(5000));
+            StartBtn.IsEnabled = false;
+            while (stopWatch.Elapsed < TimeSpan.FromMilliseconds(5000)) ;
             {
                 //From data sheet -- 1 byte selector for channel 0 on the ADC
                 //First Byte sends the Start bit for SPI
@@ -96,7 +124,7 @@ namespace Alcohol_MQ3_Tester
                 //0 - d0
                 //             S321XXXX <-- single-ended channel selection configure bits
                 // Channel 0 = 10000000 = 0x80 OR (8+channel) << 4
-                byte[] transmitBuffer = new byte[3] {1, 0x80, 0x00};
+                byte[] transmitBuffer = new byte[3] { 1, 0x80, 0x00 };
 
 
                 byte[] receiveBuffer = new byte[3];
@@ -124,7 +152,7 @@ namespace Alcohol_MQ3_Tester
                 if (concentration > highestValue) highestValue = concentration;
             }
             //Update Gauge
-            GaugeValue = highestValue;
+            GaugeValue = highestValue-ZeroPoint;    //ZeroPoint is calculated when program is initializing and this is the value when there is no alcohol in the air.
             stopWatch.Stop();
         }
 

@@ -75,7 +75,7 @@ namespace Alcohol_MQ3_Tester
         private void ResetBtn_Click(object sender, RoutedEventArgs e)
         {
             GaugeValue = 0;
-            ProgressBar.Value = 0;
+            StartBtn.IsEnabled = true;
         }
 
         private void StartBtn_Click(object sender, RoutedEventArgs e)
@@ -84,9 +84,8 @@ namespace Alcohol_MQ3_Tester
             Stopwatch stopWatch=new Stopwatch();
             stopWatch.Start();
             double highestValue = 0;
-            ProgressBar.Minimum = 0;
-            ProgressBar.Minimum = 5000;
-            while (stopWatch.Elapsed < TimeSpan.FromSeconds(5))
+            StartBtn.IsEnabled = true;
+            while (stopWatch.Elapsed < TimeSpan.FromMilliseconds(5000));
             {
                 //From data sheet -- 1 byte selector for channel 0 on the ADC
                 //First Byte sends the Start bit for SPI
@@ -107,28 +106,25 @@ namespace Alcohol_MQ3_Tester
                 //first byte returned is 0 (00000000), 
                 //second byte returned we are only interested in the last 2 bits 00000011 (mask of &3) 
                 //then shift result 8 bits to make room for the data from the 3rd byte (makes 10 bits total)
-                //third byte, need all bits, simply add it to the above result 
+                //third byte, need all bits, simply add it to the above result
                 var result = ((receiveBuffer[1] & 3) << 8) + receiveBuffer[2];
 
                 //Now a little math...
                 //The max value is 10 mg/L and the least value is 0.05 mg/L what can be measured
                 //We have 10 bits, so there are 1024 possible values
                 //When we use ((Max value-Least value)/possible values) * result + least value      then we should get the right value
-                //Least measured value: (9.95/1024.0) * 0 (Binairy 0000000000) + 0.05 = 0.05 mg/L
-                //Max measured value: (9.95/1024) * 1024(Binairy 1111111111) + 0.05 = 10 mg/L
+                //Least measured value: (9.95/1024.0) * 0 (Binairy 0000000000) + 0.1 = 0.1  mg/L
+                //Max measured value: (9.95/1024) * 1024(Binairy 1111111111) + 0.1 = 10 mg/L
 
-                double concentration = (9.95 / 1024.0) * result + 0.05;
-
+                double concentration = (9.95 / 1024.0) * result + 0.1;
                 //now we have the result in mg/L but we need µg/L
                 concentration = concentration * 1000;
 
                 //check if concentration is higher than highestValue
                 if (concentration > highestValue) highestValue = concentration;
-
-                //Update Gauge and Progressbar
-                GaugeValue = highestValue;
-                ProgressBar.Value = stopWatch.ElapsedMilliseconds;
             }
+            //Update Gauge
+            GaugeValue = highestValue;
             stopWatch.Stop();
         }
 
@@ -136,7 +132,7 @@ namespace Alcohol_MQ3_Tester
         {
             //using SPI0 on the Pi
             var spiSettings = new SpiConnectionSettings(0);//for spi bus index 0
-            spiSettings.ClockFrequency = 3600000; //3.6 MHz
+            spiSettings.ClockFrequency = 1000000; //1MHz
             spiSettings.Mode = SpiMode.Mode0;
             string spiQuery = SpiDevice.GetDeviceSelector("SPI0");
 
@@ -152,6 +148,7 @@ namespace Alcohol_MQ3_Tester
                 ResourceLoader loader=new ResourceLoader();
                 MessageDialog dialog=new MessageDialog(loader.GetString("Errormessage"), loader.GetString("ErrormessageHeader"));
                 await dialog.ShowAsync();
+                ResetBtn.IsEnabled = false;
             }
         }
     }

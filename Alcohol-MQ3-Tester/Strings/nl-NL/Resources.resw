@@ -126,11 +126,14 @@
   <data name="ActivityTbxMeasuringEnded" xml:space="preserve">
     <value>Meting beëindigd.</value>
   </data>
+  <data name="ActivityTbxPleaseCalibrate" xml:space="preserve">
+    <value>Gelieve eerst te calibreren!</value>
+  </data>
   <data name="ActivityTbxReady" xml:space="preserve">
     <value>Gereed.</value>
   </data>
-  <data name="ActivityTbxTestGauge" xml:space="preserve">
-    <value>Een ogenblik geduld, test meter....</value>
+  <data name="CalibrateBtn.Content" xml:space="preserve">
+    <value>Calibreren sensor</value>
   </data>
   <data name="Errormessage" xml:space="preserve">
     <value>SPI apparaat niet gevonden, controleer de verbinding naar de MCP3008!</value>

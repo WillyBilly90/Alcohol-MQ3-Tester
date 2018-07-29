@@ -10,12 +10,13 @@
 
     <Grid x:Name="MainGrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" RequestedTheme="Dark" Loaded="MainGrid_Loaded" MinWidth="800" MinHeight="480" MaxWidth="800" MaxHeight="480">
         <controls:RadialGauge x:Name="mugPerLiterGauge" Value="" Minimum="0" Width="300" Height="300" 
-            Maximum="2000" TickSpacing="100" ScaleWidth="15" Unit="µg/L" TickBrush="Gainsboro" TrailBrush="Orange"
+            Maximum="10000" TickSpacing="100" ScaleWidth="15" Unit="µg/L" TickBrush="Gainsboro" TrailBrush="Orange"
             ScaleTickBrush="{ThemeResource ApplicationPageBackgroundThemeBrush}" ScaleBrush="LightGreen" IsTextScaleFactorEnabled="True"
             NeedleWidth="3" NeedleBrush="IndianRed" TickLength="5" Margin="78,53,0,127" HorizontalAlignment="Left"/>
         <TextBox x:Name="PromileTbx" Header="Promille" HorizontalAlignment="Left" Margin="555,160,0,0" Text="0" Width="150" VerticalAlignment="Top"/>
-        <Button x:Name="StartBtn" x:Uid="StartBtn" HorizontalAlignment="Left" Margin="555,260,0,0" VerticalAlignment="Top" Width="150" Click="StartBtn_Click" IsEnabled="False"/>
-        <Button x:Name="ResetBtn" x:Uid="ResetBtn" HorizontalAlignment="Left" Margin="555,340,0,0" VerticalAlignment="Top" Width="150" Click="ResetBtn_Click" />
+        <Button x:Name="CalibrateBtn" x:Uid="CalibrateBtn" HorizontalAlignment="left" Margin="555,260,0,0" VerticalAlignment="Top" Width="150" Click="CalibrateBtn_Click" IsEnabled="False"/>
+        <Button x:Name="StartBtn" x:Uid="StartBtn" HorizontalAlignment="Left" Margin="555,318,0,0" VerticalAlignment="Top" Width="150" Click="StartBtn_Click" IsEnabled="False"/>
+        <Button x:Name="ResetBtn" x:Uid="ResetBtn" HorizontalAlignment="Left" Margin="555,377,0,0" VerticalAlignment="Top" Width="150" Click="ResetBtn_Click" IsEnabled="False"/>
         <TextBox x:Name="ActivityTbx" HorizontalAlignment="Left" Margin="78,377,0,0" Text="" VerticalAlignment="Top" Width="300"/>
     </Grid>
 </Page>

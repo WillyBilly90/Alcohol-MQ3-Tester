@@ -30,8 +30,9 @@ namespace Alcohol_MQ3_Tester
 
     public sealed partial class MainPage : Page
     {
-        private SpiDevice _mcp3008;
+        private SpiDevice _mcp3008; //this is the spi deviceconnector
         public double ZeroPoint=0; //this will be the calculated ZeroPoint for the MQ3 sensor when there is no alcohol in the air.
+        ResourceLoader loader = new ResourceLoader(); //connection to the multilingual strings
 
         public MainPage()
         {
@@ -48,72 +49,41 @@ namespace Alcohol_MQ3_Tester
             }
         }
 
-
-        public async Task GaugeTester()
-        {
-            //Two loops to test the gauge
-            for (int ugL = 0; ugL <= 2000; ugL = ugL + 10)
-            {
-                Task wait = Task.Delay(1);
-                GaugeValue = ugL;
-                await wait;
-            }
-            for (int ugL = 2000; ugL >= 0; ugL = ugL - 10)
-            {
-                Task wait = Task.Delay(1);
-                GaugeValue = ugL;
-                await wait;
-            }
-        }
-
         private void MainGrid_Loaded(object sender, RoutedEventArgs e)
         {
-            //Little funny thing: test the gauge
-            ResourceLoader loader = new ResourceLoader();
-            ActivityTbx.Text = loader.GetString("ActivityTbxTestGauge");
-            GaugeTester().ConfigureAwait(false);
             //Prepair SPI
             PrepareSPI();
-            try
-            {
-                //Calibrate sensor
-                Measuring();
-                ZeroPoint = GaugeValue;
-                //Finish initialization
-                StartBtn.IsEnabled = true;
-                ActivityTbx.Text = loader.GetString("ActivityTbxReady");
-            }
-            catch
-            {
-                StartBtn.IsEnabled = false;
-                ActivityTbx.Text = loader.GetString("ErrormessageHeader");
-            }
+            ActivityTbx.Text = loader.GetString("ActivityTbxPleaseCalibrate");
         }
 
         private void ResetBtn_Click(object sender, RoutedEventArgs e)
         {
             GaugeValue = 0;
             StartBtn.IsEnabled = true;
-            ResourceLoader loader = new ResourceLoader();
             ActivityTbx.Text = loader.GetString("ActivityTbxReady");
         }
 
         private void StartBtn_Click(object sender, RoutedEventArgs e)
         {
-            ResourceLoader loader = new ResourceLoader();
+            Start();
+        }
+        private async void Start()
+        {
             ActivityTbx.Text = loader.GetString("ActivityTbxMeasuring");
-            Measuring();
+            await Task.Delay(1); //dirty way to update UI
+            Measuring(false);
             ActivityTbx.Text = loader.GetString("ActivityTbxReady");
+            ResetBtn.IsEnabled = true;
         }
 
-        private void Measuring()
+        private void Measuring(bool calibrating)
         {
             //read MQ3 sensor for 5 seconds and end with highest value
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
             double highestValue = 0;
             StartBtn.IsEnabled = false;
-            while (stopWatch.Elapsed < TimeSpan.FromMilliseconds(5000)) ;
+            while (stopWatch.Elapsed < TimeSpan.FromMilliseconds(5000));
             {
                 //From data sheet -- 1 byte selector for channel 0 on the ADC
                 //First Byte sends the Start bit for SPI
@@ -138,13 +108,13 @@ namespace Alcohol_MQ3_Tester
                 var result = ((receiveBuffer[1] & 3) << 8) + receiveBuffer[2];
 
                 //Now a little math...
-                //The max value is 10 mg/L and the least value is 0.05 mg/L what can be measured
+                //The max value is 10 mg/L and the least value is 0.1 mg/L what can be measured
                 //We have 10 bits, so there are 1024 possible values
                 //When we use ((Max value-Least value)/possible values) * result + least value      then we should get the right value
-                //Least measured value: (9.95/1024.0) * 0 (Binairy 0000000000) + 0.1 = 0.1  mg/L
-                //Max measured value: (9.95/1024) * 1024(Binairy 1111111111) + 0.1 = 10 mg/L
+                //Least measured value: (9.9/1024.0) * 0 (Binairy 0000000000) + 0.1 = 0.1  mg/L
+                //Max measured value: (9.9/1024) * 1024(Binairy 1111111111) + 0.1 = 10 mg/L
 
-                double concentration = (9.95 / 1024.0) * result + 0.1;
+                double concentration = (9.9 / 1024.0) * result + 0.1;
                 //now we have the result in mg/L but we need µg/L
                 concentration = concentration * 1000;
 
@@ -152,6 +122,7 @@ namespace Alcohol_MQ3_Tester
                 if (concentration > highestValue) highestValue = concentration;
             }
             //Update Gauge
+            if (calibrating) ZeroPoint = highestValue; //If sensor is calibrating, this value is the new cleanair value;
             GaugeValue = highestValue-ZeroPoint;    //ZeroPoint is calculated when program is initializing and this is the value when there is no alcohol in the air.
             stopWatch.Stop();
         }
@@ -169,15 +140,29 @@ namespace Alcohol_MQ3_Tester
             if (deviceInfo != null && deviceInfo.Count > 0)
             {
                 _mcp3008 = await SpiDevice.FromIdAsync(deviceInfo[0].Id, spiSettings);
-                StartBtn.IsEnabled = true;
+                CalibrateBtn.IsEnabled = true;
             }
             else
             {
-                ResourceLoader loader=new ResourceLoader();
                 MessageDialog dialog=new MessageDialog(loader.GetString("Errormessage"), loader.GetString("ErrormessageHeader"));
                 await dialog.ShowAsync();
                 ResetBtn.IsEnabled = false;
             }
+        }
+
+        private void CalibrateBtn_Click(object sender, RoutedEventArgs e)
+        {
+            Calibrate();
+        }
+        private async void Calibrate()
+        {
+            //Calibrate sensor
+            ActivityTbx.Text = loader.GetString("ActivityTbxCalibrating");
+            await Task.Delay(1); //dirty way to update UI
+            Measuring(true);
+            //Finish initialization
+            StartBtn.IsEnabled = true;
+            ActivityTbx.Text = loader.GetString("ActivityTbxReady");
         }
     }
 }

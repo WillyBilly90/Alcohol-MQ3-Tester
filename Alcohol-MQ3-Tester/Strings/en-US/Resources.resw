@@ -126,11 +126,14 @@
   <data name="ActivityTbxMeasuringEnded" xml:space="preserve">
     <value>Measurement ended</value>
   </data>
+  <data name="ActivityTbxPleaseCalibrate" xml:space="preserve">
+    <value>Please calibrate first!</value>
+  </data>
   <data name="ActivityTbxReady" xml:space="preserve">
     <value>Ready.</value>
   </data>
-  <data name="ActivityTbxTestGauge" xml:space="preserve">
-    <value>Please wait, now testing gauge......</value>
+  <data name="CalibrateBtn.Content" xml:space="preserve">
+    <value>Calibrate sensor</value>
   </data>
   <data name="Errormessage" xml:space="preserve">
     <value>SPI device not found, please check connections to MCP3008!</value>
